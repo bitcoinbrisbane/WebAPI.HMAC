@@ -58,20 +58,22 @@ namespace WebAPI.HMAC.Crypto
 
         private static byte[] ComputeHash(HttpContent httpContent)
         {
-            using (var md5 = MD5.Create())
+			using (var sha256 = SHA256.Create())
             {
                 byte[] hash = null;
                 if (httpContent != null)
                 {
-                    var ms = new MemoryStream();
-                    httpContent.CopyToAsync(ms).Wait();
-                    ms.Seek(0, SeekOrigin.Begin);
+					using (MemoryStream ms = new MemoryStream())
+					{
+						httpContent.CopyToAsync(ms).Wait();
+						ms.Seek(0, SeekOrigin.Begin);
 
-                    var content = ms.ToArray();
-                    if (content.Length != 0)
-                    {
-                        hash = md5.ComputeHash(content);
-                    }
+						var content = ms.ToArray();
+						if (content.Length != 0)
+						{
+							hash = sha256.ComputeHash(content);
+						}
+					}
                 }
                 return hash;
             }
